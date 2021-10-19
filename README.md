@@ -1,4 +1,4 @@
-# contract_spending_cUSD
+# Spending cUSD from another Solidity Contract
 
 Simple app to demo how to use a contract to spend cUSD on a users behalf.
 
