@@ -1,10 +1,8 @@
 let Web3 = require("web3")
 let ContractKit = require("@celo/contractkit")
-let BigNumber = require("bignumber.js")
 let erc20Abi = require("../build/contracts/IERC20.json").abi
 let cUSD_spender = require("../build/contracts/cUSD_spender.json")
 
-const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 
 let kit
@@ -35,7 +33,7 @@ const connectCeloWallet = async function () {
       // Initialize the cUSD contract w/ ABI & address
       cUSDcontract = new kit.web3.eth.Contract(erc20Abi, cUSDContractAddress)
       // Initialize the cusd spender contract with abi & address for the current network
-      cUSD_spender_contract = new kit.web3.eth.Contract(cUSD_spender.abi, cUSD_spender[chainId].address)
+      cUSD_spender_contract = new kit.web3.eth.Contract(cUSD_spender.abi, cUSD_spender.networks[chainId].address)
       
     } catch (error) {
       console.log(`⚠️ ${error}.`)
@@ -47,17 +45,22 @@ const connectCeloWallet = async function () {
 
 
 async function approve(amount) {
+
   const result = await cUSDcontract.methods
-    .approve(cUSD_spender_contract.address, amount)
+    // Call the approve function on the cUSD contract
+    // Pass the cUSD spender contract address to approve it
+    // Convert the amount of cUSD to the appropriate units (cUSD has 10^18 decimal places, like Ether)
+    .approve(cUSD_spender_contract._address, kit.web3.utils.toWei(amount, "ether"))
     .send({ from: kit.defaultAccount })
 
+  // print the tx hash on the UI
   showTxHash(result.transactionHash) 
-  return result
 }
 
 async function send(recipient, amount) {
   const result = await cUSD_spender_contract.methods
-    .send(recipient, amount)
+    // Call the "send" function on the cUSD_spender contract
+    .send(recipient, kit.web3.utils.toWei(amount, "ether"))
     .send({ from: kit.defaultAccount })
 
     showTxHash(result.transactionHash) 
@@ -74,9 +77,12 @@ document.querySelector("#login").addEventListener("click", async (e) => {
 })  
 
 document.querySelector("#approve").addEventListener("click", async (e) => {
-    approve()
+    let amount = document.getElementById('amount').value
+    approve(amount)
 }) 
 
 document.querySelector("#send").addEventListener("click", async (e) => {
-  send()
+  let amount = document.getElementById('amount').value
+  let recipient = "0x5038ae19CDf0B623e6e8015249ecF58A1165D653" // this address is the recipeint of the cUSD coming from the cUSD_spender
+  send(recipient, amount)
 }) 

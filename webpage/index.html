@@ -5,22 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <button type="button" id="login">
-        Connect extension
+        Connect extension & initialize contracts
     </button>
+
+    <br/>
 
     <label for="amount">Amount:</label>
     <input type="text" id="amount" name="amount">
+
+    <br/>
 
     <button type="button" id="approve">
       Approve cUSD to be spent
     </button>
 
+    <br/>
+
     <button type="button" id="send">
         Send cUSD
     </button>
 
+    <p>Wait for the "Approve" transaction to confirm before calling "Send."</p>
     <p>Transaction hash: <a target="_blank" id="txHash"></a></p> 
     
-    <script src="static/bundle.js"></script>
+    <script src="bundle.js"></script>
   </body>
 </html>
